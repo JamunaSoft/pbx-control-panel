@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Trunk;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class TrunkController extends Controller
 {
@@ -14,12 +13,24 @@ class TrunkController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            $response = Http::get(route('api.trunks.index', $request->query()));
-            $trunks = $response->successful() ? $response->json()['data'] ?? [] : [];
-        } catch (\Exception $e) {
-            $trunks = [];
+        $query = Trunk::query();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('host', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
+            });
         }
+
+        // Filter by status
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $trunks = $query->orderBy('trunk_name')->paginate(25);
 
         return view('trunks.index', compact('trunks'));
     }
@@ -37,16 +48,22 @@ class TrunkController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'trunk_name' => 'required|string|max:255|unique:trunks,trunk_name',
+            'provider' => 'nullable|string|max:255',
+            'host' => 'required|string|max:255',
+            'username' => 'nullable|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'type' => 'required|in:sip,iax,pjsip',
+        ]);
+
         try {
-            $response = Http::post(route('api.trunks.store'), $request->all());
+            Trunk::create($validated);
 
-            if ($response->successful()) {
-                return redirect()->route('trunks.index')->with('success', 'Trunk created successfully');
-            }
-
-            return back()->withErrors($response->json())->withInput();
+            return redirect()->route('trunks.index')->with('success', 'Trunk created successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to create trunk')->withInput();
+            return back()->with('error', 'Failed to create trunk: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -71,16 +88,22 @@ class TrunkController extends Controller
      */
     public function update(Request $request, Trunk $trunk)
     {
+        $validated = $request->validate([
+            'trunk_name' => 'required|string|max:255|unique:trunks,trunk_name,' . $trunk->id,
+            'provider' => 'nullable|string|max:255',
+            'host' => 'required|string|max:255',
+            'username' => 'nullable|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'type' => 'required|in:sip,iax,pjsip',
+        ]);
+
         try {
-            $response = Http::put(route('api.trunks.update', $trunk), $request->all());
+            $trunk->update($validated);
 
-            if ($response->successful()) {
-                return redirect()->route('trunks.index')->with('success', 'Trunk updated successfully');
-            }
-
-            return back()->withErrors($response->json())->withInput();
+            return redirect()->route('trunks.index')->with('success', 'Trunk updated successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update trunk')->withInput();
+            return back()->with('error', 'Failed to update trunk: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -90,13 +113,9 @@ class TrunkController extends Controller
     public function destroy(Request $request, Trunk $trunk)
     {
         try {
-            $response = Http::delete(route('api.trunks.destroy', $trunk));
+            $trunk->delete();
 
-            if ($response->successful()) {
-                return redirect()->route('trunks.index')->with('success', 'Trunk deleted successfully');
-            }
-
-            return back()->with('error', 'Failed to delete trunk');
+            return redirect()->route('trunks.index')->with('success', 'Trunk deleted successfully');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete trunk');
         }

@@ -34,29 +34,30 @@
                         @forelse($trunks as $trunk)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $trunk['trunk_name'] }}
+                                {{ $trunk->trunk_name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $trunk['provider'] }}
+                                {{ $trunk->provider ?? 'Unknown' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $trunk['host'] }}:{{ $trunk['port'] ?? 5060 }}
+                                {{ $trunk->host }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                    @if($trunk['status'] === 'active') bg-green-100 text-green-800
-                                    @else bg-red-100 text-red-800 @endif">
-                                    {{ ucfirst($trunk['status']) }}
+                                    @if($trunk->status === 'active') bg-green-100 text-green-800
+                                    @elseif($trunk->status === 'inactive') bg-red-100 text-red-800
+                                    @else bg-gray-100 text-gray-800 @endif">
+                                    {{ ucfirst($trunk->status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ strtoupper($trunk['type']) }}
+                                {{ strtoupper($trunk->type ?? 'SIP') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('trunks.show', $trunk['id']) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                    <a href="{{ route('trunks.edit', $trunk['id']) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form method="POST" action="{{ route('trunks.destroy', $trunk['id']) }}" class="inline">
+                                    <a href="{{ route('trunks.show', $trunk->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                    <a href="{{ route('trunks.edit', $trunk->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <form method="POST" action="{{ route('trunks.destroy', $trunk->id) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
@@ -74,6 +75,13 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination -->
+            @if($trunks->hasPages())
+            <div class="mt-4">
+                {{ $trunks->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

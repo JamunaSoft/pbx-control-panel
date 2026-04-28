@@ -33,28 +33,28 @@
                         @forelse($extensions as $extension)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $extension['extension_number'] }}
+                                {{ $extension->extension_number }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $extension['display_name'] }}
+                                {{ $extension->display_name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                                    @if($extension['status'] === 'online') bg-green-100 text-green-800
-                                    @elseif($extension['status'] === 'ringing') bg-yellow-100 text-yellow-800
-                                    @elseif($extension['status'] === 'busy') bg-red-100 text-red-800
+                                    @if($extension->status === 'online') bg-green-100 text-green-800
+                                    @elseif($extension->status === 'ringing') bg-yellow-100 text-yellow-800
+                                    @elseif($extension->status === 'busy') bg-red-100 text-red-800
                                     @else bg-gray-100 text-gray-800 @endif">
-                                    {{ ucfirst($extension['status']) }}
+                                    {{ ucfirst($extension->status) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ strtoupper($extension['device_type']) }}
+                                {{ strtoupper($extension->device_type ?? 'SIP') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('extensions.show', $extension['id']) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
-                                    <a href="{{ route('extensions.edit', $extension['id']) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                    <form method="POST" action="{{ route('extensions.destroy', $extension['id']) }}" class="inline">
+                                    <a href="{{ route('extensions.show', $extension->id) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
+                                    <a href="{{ route('extensions.edit', $extension->id) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                    <form method="POST" action="{{ route('extensions.destroy', $extension->id) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>

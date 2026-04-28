@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
+use App\Events\ExtensionStatusUpdated;
+use App\Models\Extension;
 
 class AsteriskService
 {
@@ -69,7 +71,20 @@ class AsteriskService
 
         try {
             $status = $this->ami->getExtensionStatus($extension);
+            $previousStatus = Cache::get("extension_status_{$extension}");
+
+            // Update cache
             Cache::put("extension_status_{$extension}", $status, 60); // Cache for 1 minute
+
+            // Fire event if status changed
+            if ($status !== $previousStatus && $status !== 'unknown') {
+                $extensionModel = Extension::where('extension_number', $extension)->first();
+                if ($extensionModel) {
+                    $extensionModel->update(['status' => $status]);
+                    broadcast(new ExtensionStatusUpdated($extensionModel));
+                }
+            }
+
             return $status;
         } catch (Exception $e) {
             Log::error('Failed to get extension status', ['extension' => $extension, 'error' => $e->getMessage()]);

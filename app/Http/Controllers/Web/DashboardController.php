@@ -17,13 +17,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Get stats from API
-        try {
-            $statsResponse = Http::timeout(5)->get(route('api.dashboard.stats'));
-            $stats = $statsResponse->successful() ? $statsResponse->json() : $this->getFallbackStats();
-        } catch (\Exception $e) {
-            $stats = $this->getFallbackStats();
-        }
+        // Get stats directly from database
+        $stats = $this->getFallbackStats();
 
         return view('dashboard.index', compact('stats'));
     }

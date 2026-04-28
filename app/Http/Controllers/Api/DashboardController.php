@@ -8,6 +8,7 @@ use App\Models\Trunk;
 use App\Models\CallQueue;
 use App\Models\Cdr;
 use App\Services\Asterisk\AsteriskService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 

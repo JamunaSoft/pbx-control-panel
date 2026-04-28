@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Extension;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class ExtensionController extends Controller
 {
@@ -14,12 +13,24 @@ class ExtensionController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            $response = Http::get(route('api.extensions.index', $request->query()));
-            $extensions = $response->successful() ? $response->json()['data'] ?? [] : [];
-        } catch (\Exception $e) {
-            $extensions = [];
+        $query = Extension::query();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('extension_number', 'like', "%{$search}%")
+                  ->orWhere('display_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
         }
+
+        // Filter by status
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $extensions = $query->orderBy('extension_number')->paginate(25);
 
         return view('extensions.index', compact('extensions'));
     }
@@ -37,16 +48,26 @@ class ExtensionController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'extension_number' => 'required|string|unique:extensions|regex:/^[0-9]+$/',
+            'display_name' => 'required|string|max:255',
+            'password' => 'required|string|min:6',
+            'email' => 'nullable|email',
+            'device_type' => 'required|in:sip,pjsip',
+            'context' => 'required|string|max:255',
+            'call_forwarding_enabled' => 'boolean',
+            'call_forwarding_number' => 'nullable|string|max:255',
+            'dnd_enabled' => 'boolean',
+            'voicemail_enabled' => 'boolean',
+            'voicemail_box' => 'nullable|string|max:255',
+        ]);
+
         try {
-            $response = Http::post(route('api.extensions.store'), $request->all());
+            Extension::create($validated);
 
-            if ($response->successful()) {
-                return redirect()->route('extensions.index')->with('success', 'Extension created successfully');
-            }
-
-            return back()->withErrors($response->json())->withInput();
+            return redirect()->route('extensions.index')->with('success', 'Extension created successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to create extension')->withInput();
+            return back()->with('error', 'Failed to create extension: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -71,16 +92,26 @@ class ExtensionController extends Controller
      */
     public function update(Request $request, Extension $extension)
     {
+        $validated = $request->validate([
+            'extension_number' => 'required|string|regex:/^[0-9]+$/|unique:extensions,extension_number,' . $extension->id,
+            'display_name' => 'required|string|max:255',
+            'password' => 'required|string|min:6',
+            'email' => 'nullable|email',
+            'device_type' => 'required|in:sip,pjsip',
+            'context' => 'required|string|max:255',
+            'call_forwarding_enabled' => 'boolean',
+            'call_forwarding_number' => 'nullable|string|max:255',
+            'dnd_enabled' => 'boolean',
+            'voicemail_enabled' => 'boolean',
+            'voicemail_box' => 'nullable|string|max:255',
+        ]);
+
         try {
-            $response = Http::put(route('api.extensions.update', $extension), $request->all());
+            $extension->update($validated);
 
-            if ($response->successful()) {
-                return redirect()->route('extensions.index')->with('success', 'Extension updated successfully');
-            }
-
-            return back()->withErrors($response->json())->withInput();
+            return redirect()->route('extensions.index')->with('success', 'Extension updated successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update extension')->withInput();
+            return back()->with('error', 'Failed to update extension: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -90,13 +121,9 @@ class ExtensionController extends Controller
     public function destroy(Request $request, Extension $extension)
     {
         try {
-            $response = Http::delete(route('api.extensions.destroy', $extension));
+            $extension->delete();
 
-            if ($response->successful()) {
-                return redirect()->route('extensions.index')->with('success', 'Extension deleted successfully');
-            }
-
-            return back()->with('error', 'Failed to delete extension');
+            return redirect()->route('extensions.index')->with('success', 'Extension deleted successfully');
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete extension');
         }

@@ -198,8 +198,53 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Laravel Echo with Pusher
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: '{{ config("broadcasting.connections.pusher.key") }}',
+        cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
+        encrypted: true
+    });
+
+    // Listen for extension status updates
+    window.Echo.channel('extensions')
+        .listen('.extension.status.updated', (e) => {
+            console.log('Extension status updated:', e.extension);
+            // Update extension status in UI
+            updateExtensionStatus(e.extension);
+        });
+
+    // Function to update extension status display
+    function updateExtensionStatus(extension) {
+        const statusElement = document.querySelector(`[data-extension-id="${extension.id}"] .status-badge`);
+        if (statusElement) {
+            // Remove existing status classes
+            statusElement.className = 'inline-flex px-2 py-1 text-xs font-semibold rounded-full status-badge';
+
+            // Add new status class
+            switch(extension.status) {
+                case 'online':
+                    statusElement.classList.add('bg-green-100', 'text-green-800');
+                    break;
+                case 'ringing':
+                    statusElement.classList.add('bg-yellow-100', 'text-yellow-800');
+                    break;
+                case 'busy':
+                    statusElement.classList.add('bg-red-100', 'text-red-800');
+                    break;
+                default:
+                    statusElement.classList.add('bg-gray-100', 'text-gray-800');
+            }
+
+            statusElement.textContent = extension.status.charAt(0).toUpperCase() + extension.status.slice(1);
+        }
+    }
+
+    // Chart initialization
     const ctx = document.getElementById('callVolumeChart').getContext('2d');
     const callVolumeData = @json($stats['call_volume_today'] ?? array_fill(0, 24, 0));
 
