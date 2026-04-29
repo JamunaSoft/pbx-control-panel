@@ -22,7 +22,7 @@ class CdrController extends Controller
         }
 
         if ($request->has('end_date')) {
-            $query->where('start', '<=', $request->end_date . ' 23:59:59');
+            $query->where('start', '<=', $request->end_date.' 23:59:59');
         }
 
         // Source/Destination filtering
@@ -82,7 +82,7 @@ class CdrController extends Controller
         }
 
         if ($request->has('end_date')) {
-            $query->where('start', '<=', $request->end_date . ' 23:59:59');
+            $query->where('start', '<=', $request->end_date.' 23:59:59');
         }
 
         $stats = [
@@ -145,16 +145,16 @@ class CdrController extends Controller
 
         $query = Cdr::whereBetween('start', [
             $validated['start_date'],
-            $validated['end_date'] . ' 23:59:59'
+            $validated['end_date'].' 23:59:59',
         ]);
 
         $cdrs = $query->orderBy('start')->get();
 
         if ($validated['format'] === 'csv') {
-            $filename = 'cdr_' . $validated['start_date'] . '_to_' . $validated['end_date'] . '.csv';
+            $filename = 'cdr_'.$validated['start_date'].'_to_'.$validated['end_date'].'.csv';
             $headers = [
                 'Content-Type' => 'text/csv',
-                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             ];
 
             $callback = function () use ($cdrs) {
@@ -163,7 +163,7 @@ class CdrController extends Controller
                 // CSV headers
                 fputcsv($file, [
                     'UniqueID', 'Start', 'Answer', 'End', 'Duration', 'BillSec',
-                    'Source', 'Destination', 'Disposition', 'Channel', 'DstChannel'
+                    'Source', 'Destination', 'Disposition', 'Channel', 'DstChannel',
                 ]);
 
                 // CSV data

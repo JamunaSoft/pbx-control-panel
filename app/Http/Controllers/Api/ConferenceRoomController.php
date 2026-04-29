@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ConferenceRoom;
 use App\Models\AuditLog;
+use App\Models\ConferenceRoom;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -21,7 +21,7 @@ class ConferenceRoomController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('room_number', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%");
+                    ->orWhere('name', 'like', "%{$search}%");
             });
         }
 
@@ -59,7 +59,7 @@ class ConferenceRoomController extends Controller
 
         return response()->json([
             'room' => $room,
-            'message' => 'Conference room created successfully'
+            'message' => 'Conference room created successfully',
         ], 201);
     }
 
@@ -96,7 +96,7 @@ class ConferenceRoomController extends Controller
 
         return response()->json([
             'room' => $room,
-            'message' => 'Conference room updated successfully'
+            'message' => 'Conference room updated successfully',
         ]);
     }
 
@@ -112,7 +112,7 @@ class ConferenceRoomController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted conference room {$room->room_number}");
 
         return response()->json([
-            'message' => 'Conference room deleted successfully'
+            'message' => 'Conference room deleted successfully',
         ]);
     }
 
@@ -125,7 +125,7 @@ class ConferenceRoomController extends Controller
         // For now, return empty array
         return response()->json([
             'active_conferences' => [],
-            'message' => 'Real-time conference data requires Asterisk ARI integration'
+            'message' => 'Real-time conference data requires Asterisk ARI integration',
         ]);
     }
 
@@ -144,7 +144,7 @@ class ConferenceRoomController extends Controller
 
         return response()->json([
             'message' => 'Participant kick requires Asterisk ARI integration',
-            'participant_id' => $validated['participant_id']
+            'participant_id' => $validated['participant_id'],
         ]);
     }
 }

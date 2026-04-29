@@ -20,8 +20,8 @@ class TrunkController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('host', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                    ->orWhere('host', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%");
             });
         }
 
@@ -63,7 +63,7 @@ class TrunkController extends Controller
 
             return redirect()->route('trunks.index')->with('success', 'Trunk created successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to create trunk: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to create trunk: '.$e->getMessage())->withInput();
         }
     }
 
@@ -89,7 +89,7 @@ class TrunkController extends Controller
     public function update(Request $request, Trunk $trunk)
     {
         $validated = $request->validate([
-            'trunk_name' => 'required|string|max:255|unique:trunks,trunk_name,' . $trunk->id,
+            'trunk_name' => 'required|string|max:255|unique:trunks,trunk_name,'.$trunk->id,
             'provider' => 'nullable|string|max:255',
             'host' => 'required|string|max:255',
             'username' => 'nullable|string|max:255',
@@ -103,7 +103,7 @@ class TrunkController extends Controller
 
             return redirect()->route('trunks.index')->with('success', 'Trunk updated successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Failed to update trunk: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Failed to update trunk: '.$e->getMessage())->withInput();
         }
     }
 

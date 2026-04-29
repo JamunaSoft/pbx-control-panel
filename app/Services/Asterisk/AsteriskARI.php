@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\Log;
 class AsteriskARI
 {
     private $baseUrl;
+
     private $username;
+
     private $password;
+
     private $appName;
 
     public function __construct($host = '127.0.0.1', $port = 8088, $username = 'asterisk', $password = 'asterisk', $appName = 'pbx-control-panel')
@@ -29,7 +32,7 @@ class AsteriskARI
         try {
             $response = Http::withBasicAuth($this->username, $this->password)
                 ->timeout(10)
-                ->$method($this->baseUrl . $endpoint, $data);
+                ->$method($this->baseUrl.$endpoint, $data);
 
             if ($response->successful()) {
                 return $response->json();
@@ -37,14 +40,15 @@ class AsteriskARI
 
             Log::error("ARI request failed: {$method} {$endpoint}", [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
 
             return null;
         } catch (Exception $e) {
             Log::error("ARI request exception: {$method} {$endpoint}", [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -313,6 +317,7 @@ class AsteriskARI
     public function isAvailable()
     {
         $info = $this->getInfo();
+
         return $info !== null;
     }
 }

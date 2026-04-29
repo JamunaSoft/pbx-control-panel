@@ -27,11 +27,11 @@ class CdrController extends Controller
 
         // Filter by caller/callee
         if ($request->has('caller')) {
-            $query->where('src', 'like', '%' . $request->caller . '%');
+            $query->where('src', 'like', '%'.$request->caller.'%');
         }
 
         if ($request->has('callee')) {
-            $query->where('dst', 'like', '%' . $request->callee . '%');
+            $query->where('dst', 'like', '%'.$request->callee.'%');
         }
 
         // Filter by disposition
@@ -70,11 +70,11 @@ class CdrController extends Controller
         }
 
         if ($request->has('caller')) {
-            $query->where('src', 'like', '%' . $request->caller . '%');
+            $query->where('src', 'like', '%'.$request->caller.'%');
         }
 
         if ($request->has('callee')) {
-            $query->where('dst', 'like', '%' . $request->callee . '%');
+            $query->where('dst', 'like', '%'.$request->callee.'%');
         }
 
         if ($request->has('disposition')) {
@@ -91,9 +91,9 @@ class CdrController extends Controller
 
         $cdrs = $query->orderBy('start', 'desc')->get();
 
-        $filename = 'cdr_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'cdr_export_'.now()->format('Y-m-d_H-i-s').'.csv';
 
-        return new StreamedResponse(function() use ($cdrs) {
+        return new StreamedResponse(function () use ($cdrs) {
             $handle = fopen('php://output', 'w');
 
             // CSV headers
@@ -107,7 +107,7 @@ class CdrController extends Controller
                 'Context',
                 'Channel',
                 'Destination Channel',
-                'Unique ID'
+                'Unique ID',
             ]);
 
             // CSV data
@@ -129,7 +129,7 @@ class CdrController extends Controller
             fclose($handle);
         }, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Trunk;
 use App\Models\AuditLog;
+use App\Models\Trunk;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -21,8 +21,8 @@ class TrunkController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('trunk_name', 'like', "%{$search}%")
-                  ->orWhere('provider', 'like', "%{$search}%")
-                  ->orWhere('host', 'like', "%{$search}%");
+                    ->orWhere('provider', 'like', "%{$search}%")
+                    ->orWhere('host', 'like', "%{$search}%");
             });
         }
 
@@ -64,7 +64,7 @@ class TrunkController extends Controller
 
         return response()->json([
             'trunk' => $trunk,
-            'message' => 'Trunk created successfully'
+            'message' => 'Trunk created successfully',
         ], 201);
     }
 
@@ -104,7 +104,7 @@ class TrunkController extends Controller
 
         return response()->json([
             'trunk' => $trunk,
-            'message' => 'Trunk updated successfully'
+            'message' => 'Trunk updated successfully',
         ]);
     }
 
@@ -120,7 +120,7 @@ class TrunkController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted trunk {$trunk->trunk_name}");
 
         return response()->json([
-            'message' => 'Trunk deleted successfully'
+            'message' => 'Trunk deleted successfully',
         ]);
     }
 }

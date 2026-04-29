@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\CallQueue;
 use App\Models\Extension;
-use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -71,7 +71,7 @@ class QueueController extends Controller
 
         return response()->json([
             'queue' => $queue->load(['extensions']),
-            'message' => 'Queue created successfully'
+            'message' => 'Queue created successfully',
         ], 201);
     }
 
@@ -109,7 +109,7 @@ class QueueController extends Controller
 
         return response()->json([
             'queue' => $queue->load(['extensions']),
-            'message' => 'Queue updated successfully'
+            'message' => 'Queue updated successfully',
         ]);
     }
 
@@ -136,7 +136,7 @@ class QueueController extends Controller
 
         return response()->json([
             'message' => 'Extension added to queue successfully',
-            'queue' => $queue->load(['extensions'])
+            'queue' => $queue->load(['extensions']),
         ]);
     }
 
@@ -152,7 +152,7 @@ class QueueController extends Controller
 
         return response()->json([
             'message' => 'Extension removed from queue successfully',
-            'queue' => $queue->load(['extensions'])
+            'queue' => $queue->load(['extensions']),
         ]);
     }
 
@@ -172,7 +172,7 @@ class QueueController extends Controller
 
         return response()->json([
             'message' => 'Extension penalty updated successfully',
-            'queue' => $queue->load(['extensions'])
+            'queue' => $queue->load(['extensions']),
         ]);
     }
 
@@ -189,7 +189,7 @@ class QueueController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted queue {$queue->queue_name}");
 
         return response()->json([
-            'message' => 'Queue deleted successfully'
+            'message' => 'Queue deleted successfully',
         ]);
     }
 }

@@ -8,11 +8,17 @@ use Illuminate\Support\Facades\Log;
 class AsteriskAMI
 {
     private $socket;
+
     private $host;
+
     private $port;
+
     private $username;
+
     private $secret;
+
     private $connected = false;
+
     private $authenticated = false;
 
     public function __construct($host = '127.0.0.1', $port = 5038, $username = 'admin', $secret = 'password')
@@ -31,7 +37,7 @@ class AsteriskAMI
         try {
             $this->socket = fsockopen($this->host, $this->port, $errno, $errstr, 10);
 
-            if (!$this->socket) {
+            if (! $this->socket) {
                 throw new Exception("Cannot connect to Asterisk AMI: $errstr ($errno)");
             }
 
@@ -40,7 +46,8 @@ class AsteriskAMI
 
             return $this->authenticate();
         } catch (Exception $e) {
-            Log::error('Asterisk AMI connection failed: ' . $e->getMessage());
+            Log::error('Asterisk AMI connection failed: '.$e->getMessage());
+
             return false;
         }
     }
@@ -51,7 +58,7 @@ class AsteriskAMI
     private function readWelcomeMessage()
     {
         $response = $this->readResponse();
-        if (!str_contains($response, 'Asterisk Call Manager')) {
+        if (! str_contains($response, 'Asterisk Call Manager')) {
             throw new Exception('Invalid AMI welcome message');
         }
     }
@@ -67,6 +74,7 @@ class AsteriskAMI
 
         if (str_contains($response, 'Response: Success')) {
             $this->authenticated = true;
+
             return true;
         }
 
@@ -78,7 +86,7 @@ class AsteriskAMI
      */
     public function sendCommand($command)
     {
-        if (!$this->connected || !$this->authenticated) {
+        if (! $this->connected || ! $this->authenticated) {
             throw new Exception('Not connected to Asterisk AMI');
         }
 
@@ -93,7 +101,7 @@ class AsteriskAMI
         $response = '';
         $timeout = time() + 5; // 5 second timeout
 
-        while (!feof($this->socket) && time() < $timeout) {
+        while (! feof($this->socket) && time() < $timeout) {
             $line = fgets($this->socket, 4096);
 
             if ($line === false) {

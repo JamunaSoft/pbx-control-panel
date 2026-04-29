@@ -20,7 +20,7 @@ class IvrController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('extension', 'like', "%{$search}%");
+                    ->orWhere('extension', 'like', "%{$search}%");
             });
         }
 

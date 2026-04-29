@@ -20,7 +20,7 @@ class VoicemailController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('mailbox', 'like', "%{$search}%")
-                  ->orWhere('fullname', 'like', "%{$search}%");
+                    ->orWhere('fullname', 'like', "%{$search}%");
             });
         }
 

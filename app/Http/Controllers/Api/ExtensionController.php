@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Extension;
 use App\Models\AuditLog;
+use App\Models\Extension;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -24,8 +24,8 @@ class ExtensionController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('extension_number', 'like', "%{$search}%")
-                  ->orWhere('display_name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('display_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -72,7 +72,7 @@ class ExtensionController extends Controller
         return response()->json([
             'extension' => $extension,
             'generated_password' => $password, // Only shown once for security
-            'message' => 'Extension created successfully'
+            'message' => 'Extension created successfully',
         ], 201);
     }
 
@@ -113,7 +113,7 @@ class ExtensionController extends Controller
 
         return response()->json([
             'extension' => $extension,
-            'message' => 'Extension updated successfully'
+            'message' => 'Extension updated successfully',
         ]);
     }
 
@@ -127,7 +127,7 @@ class ExtensionController extends Controller
         // Check if extension is in use
         if ($extension->users()->exists() || $extension->queues()->exists()) {
             return response()->json([
-                'error' => 'Cannot delete extension that is assigned to users or queues'
+                'error' => 'Cannot delete extension that is assigned to users or queues',
             ], 422);
         }
 
@@ -137,7 +137,7 @@ class ExtensionController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted extension {$extension->extension_number}");
 
         return response()->json([
-            'message' => 'Extension deleted successfully'
+            'message' => 'Extension deleted successfully',
         ]);
     }
 }

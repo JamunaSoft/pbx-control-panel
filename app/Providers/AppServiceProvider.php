@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register Asterisk service as singleton
         $this->app->singleton(AsteriskService::class, function ($app) {
-            return new AsteriskService();
+            return new AsteriskService;
         });
     }
 

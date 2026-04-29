@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pbx-control-panel-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+      - ./storage/framework:/var/www/html/storage/framework
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - pbx-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: pbx-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_DATABASE: ${DB_DATABASE:-asteriskcdrdb}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - pbx-network
+
+  # Redis for Queue & Cache & WebSocket Presence
+  redis:
+    image: redis:7-alpine
+    container_name: pbx-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - pbx-network
+
+  # Soketi - Self-hosted Pusher-compatible WebSocket server (FREE)
+  soketi:
+    image: quay.io/soketi/soketi:latest
+    container_name: pbx-soketi
+    restart: unless-stopped
+    environment:
+      - SOKETI_METRICS_ENABLED=1
+      - SOKETI_PRESENCE_ENABLED=1
+      - SOKETI_DEFAULT_APP_ID=${PUSHER_APP_ID:-local}
+      - SOKETI_DEFAULT_APP_KEY=${PUSHER_APP_KEY:-local}
+      - SOKETI_DEFAULT_APP_SECRET=${PUSHER_APP_SECRET:-local}
+    ports:
+      - "6001:6001"   # WebSocket port
+      - "9601:9601"   # Metrics port (optional)
+    volumes:
+      - soketi-data:/var/lib/soketi
+    networks:
+      - pbx-network
+
+  # Horizon (optional, for queue monitoring)
+  horizon:
+    image: laravel/horizon
+    container_name: pbx-horizon
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    networks:
+      - pbx-network
+
+networks:
+  pbx-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+  soketi-data:

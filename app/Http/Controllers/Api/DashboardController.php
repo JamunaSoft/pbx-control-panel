@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Extension;
-use App\Models\Trunk;
 use App\Models\CallQueue;
 use App\Models\Cdr;
+use App\Models\Extension;
+use App\Models\Trunk;
 use App\Services\Asterisk\AsteriskService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 
 class DashboardController extends Controller
 {
@@ -113,7 +112,7 @@ class DashboardController extends Controller
     public function extensionStatus(Request $request)
     {
         $extensions = Extension::select(['id', 'extension_number', 'display_name', 'status'])
-                              ->get();
+            ->get();
 
         // Update status from Asterisk if connected
         if ($this->asterisk->isConnected()) {
@@ -141,11 +140,11 @@ class DashboardController extends Controller
         $today = Carbon::today();
 
         $callVolume = Cdr::selectRaw('HOUR(start) as hour, COUNT(*) as calls')
-                        ->whereDate('start', $today)
-                        ->groupBy('hour')
-                        ->orderBy('hour')
-                        ->pluck('calls', 'hour')
-                        ->toArray();
+            ->whereDate('start', $today)
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('calls', 'hour')
+            ->toArray();
 
         // Fill in missing hours with 0
         $volumeByHour = [];

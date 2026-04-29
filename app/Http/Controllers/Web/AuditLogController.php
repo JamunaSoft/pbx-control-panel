@@ -39,8 +39,8 @@ class AuditLogController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('description', 'like', "%{$search}%")
-                  ->orWhere('model_type', 'like', "%{$search}%")
-                  ->orWhere('action', 'like', "%{$search}%");
+                    ->orWhere('model_type', 'like', "%{$search}%")
+                    ->orWhere('action', 'like', "%{$search}%");
             });
         }
 

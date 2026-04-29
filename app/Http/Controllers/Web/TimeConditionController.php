@@ -91,7 +91,7 @@ class TimeConditionController extends Controller
     public function update(Request $request, TimeCondition $timeCondition)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:time_conditions,name,' . $timeCondition->id,
+            'name' => 'required|string|max:255|unique:time_conditions,name,'.$timeCondition->id,
             'time_start' => 'nullable|date_format:H:i',
             'time_end' => 'nullable|date_format:H:i',
             'days_of_week' => 'nullable|array',

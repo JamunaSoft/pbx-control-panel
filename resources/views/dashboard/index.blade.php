@@ -198,25 +198,16 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Laravel Echo with Pusher
-    window.Echo = new Echo({
-        broadcaster: 'pusher',
-        key: '{{ config("broadcasting.connections.pusher.key") }}',
-        cluster: '{{ config("broadcasting.connections.pusher.options.cluster") }}',
-        encrypted: true
-    });
-
-    // Listen for extension status updates
-    window.Echo.channel('extensions')
-        .listen('.extension.status.updated', (e) => {
-            console.log('Extension status updated:', e.extension);
-            // Update extension status in UI
-            updateExtensionStatus(e.extension);
-        });
+    // Listen for extension status updates via private channel
+    if (window.Echo) {
+        window.Echo.private('extensions')
+            .listen('.extension.status.updated', (e) => {
+                console.log('Extension status updated:', e.extension);
+                updateExtensionStatus(e.extension);
+            });
+    }
 
     // Function to update extension status display
     function updateExtensionStatus(extension) {

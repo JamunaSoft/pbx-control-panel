@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Extension;
 use App\Services\Asterisk\AsteriskService;
 use Illuminate\Console\Command;
 
@@ -40,13 +41,13 @@ class TestAsterisk extends Command
             $this->info('System Info:');
             $this->table(
                 ['Property', 'Value'],
-                collect($systemInfo)->map(function($value, $key) {
+                collect($systemInfo)->map(function ($value, $key) {
                     return [$key, $value];
                 })->toArray()
             );
 
             // Test getting extension status (if extensions exist)
-            $extensions = \App\Models\Extension::all();
+            $extensions = Extension::all();
             if ($extensions->count() > 0) {
                 $this->info('Testing extension status...');
                 $firstExtension = $extensions->first();
@@ -59,5 +60,4 @@ class TestAsterisk extends Command
             $this->warn('Make sure Asterisk is running and AMI/ARI are properly configured');
         }
     }
-}
 }

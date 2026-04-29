@@ -38,7 +38,7 @@ class TimeCondition extends Model
      */
     public function matchesCurrentTime(): bool
     {
-        if (!$this->enabled) {
+        if (! $this->enabled) {
             return false;
         }
 
@@ -56,17 +56,17 @@ class TimeCondition extends Model
         }
 
         // Check days of week
-        if ($this->days_of_week && !in_array($now->dayOfWeek, $this->days_of_week)) {
+        if ($this->days_of_week && ! in_array($now->dayOfWeek, $this->days_of_week)) {
             return false;
         }
 
         // Check days of month
-        if ($this->days_of_month && !in_array($now->day, $this->days_of_month)) {
+        if ($this->days_of_month && ! in_array($now->day, $this->days_of_month)) {
             return false;
         }
 
         // Check months
-        if ($this->months && !in_array($now->month, $this->months)) {
+        if ($this->months && ! in_array($now->month, $this->months)) {
             return false;
         }
 

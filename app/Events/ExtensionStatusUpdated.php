@@ -5,7 +5,6 @@ namespace App\Events;
 use App\Models\Extension;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -28,12 +27,12 @@ class ExtensionStatusUpdated implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
+     * @return array<int, Channel>
      */
     public function broadcastOn(): array
     {
         return [
-            new Channel('extensions'),
+            new PrivateChannel('extensions'),
         ];
     }
 
@@ -56,20 +55,7 @@ class ExtensionStatusUpdated implements ShouldBroadcast
                 'extension_number' => $this->extension->extension_number,
                 'status' => $this->extension->status,
                 'updated_at' => $this->extension->updated_at,
-            ]
-        ];
-    }
-}
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('channel-name'),
+            ],
         ];
     }
 }

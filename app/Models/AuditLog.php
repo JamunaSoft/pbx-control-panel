@@ -30,7 +30,7 @@ class AuditLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public static function log(string $action, ?Model $model = null, ?User $user = null, array $oldValues = [], array $newValues = [], string $description = null)
+    public static function log(string $action, ?Model $model = null, ?User $user = null, array $oldValues = [], array $newValues = [], ?string $description = null)
     {
         return static::create([
             'action' => $action,

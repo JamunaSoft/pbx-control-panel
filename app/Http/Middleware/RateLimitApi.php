@@ -3,15 +3,15 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\RateLimiter;
+use Symfony\Component\HttpFoundation\Response;
 
 class RateLimitApi
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Closure(Request): (Response)  $next
      */
     public function handle(Request $request, \Closure $next): Response
     {
@@ -19,7 +19,7 @@ class RateLimitApi
 
         if (RateLimiter::tooManyAttempts($key, 60)) { // 60 requests per minute
             return response()->json([
-                'error' => 'Too many requests. Please try again later.'
+                'error' => 'Too many requests. Please try again later.',
             ], 429)->header('Retry-After', RateLimiter::availableIn($key));
         }
 

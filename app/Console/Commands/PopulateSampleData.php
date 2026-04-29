@@ -2,16 +2,17 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Extension;
-use App\Models\Trunk;
 use App\Models\CallQueue;
-use App\Models\Ivr;
 use App\Models\CallRoute;
 use App\Models\ConferenceRoom;
-use App\Models\Voicemail;
+use App\Models\Extension;
+use App\Models\Ivr;
+use App\Models\Trunk;
 use App\Models\User;
+use App\Models\Voicemail;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class PopulateSampleData extends Command
 {
@@ -34,8 +35,8 @@ class PopulateSampleData extends Command
      */
     public function handle()
     {
-        if (!$this->option('force') && $this->dataExists()) {
-            if (!$this->confirm('Sample data already exists. Continue anyway? This may create duplicates.')) {
+        if (! $this->option('force') && $this->dataExists()) {
+            if (! $this->confirm('Sample data already exists. Continue anyway? This may create duplicates.')) {
                 return;
             }
         }
@@ -67,8 +68,8 @@ class PopulateSampleData extends Command
         $this->info('Creating roles...');
 
         // Create roles if they don't exist
-        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'admin']);
-        \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user']);
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'user']);
 
         $this->info('Creating users...');
 
@@ -241,12 +242,12 @@ class PopulateSampleData extends Command
             if ($queue['queue_name'] === 'support') {
                 $extensions = Extension::whereIn('extension_number', ['1001', '1002'])->get();
                 if ($extensions->isNotEmpty()) {
-                    $queueModel->extensions()->sync($extensions->pluck('id')->mapWithKeys(fn($id) => [$id => ['penalty' => 1]]));
+                    $queueModel->extensions()->sync($extensions->pluck('id')->mapWithKeys(fn ($id) => [$id => ['penalty' => 1]]));
                 }
             } elseif ($queue['queue_name'] === 'sales') {
                 $extensions = Extension::whereIn('extension_number', ['1003', '1004'])->get();
                 if ($extensions->isNotEmpty()) {
-                    $queueModel->extensions()->sync($extensions->pluck('id')->mapWithKeys(fn($id) => [$id => ['penalty' => 1]]));
+                    $queueModel->extensions()->sync($extensions->pluck('id')->mapWithKeys(fn ($id) => [$id => ['penalty' => 1]]));
                 }
             }
         }

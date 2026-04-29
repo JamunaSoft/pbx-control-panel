@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ivr;
 use App\Models\AuditLog;
+use App\Models\Ivr;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -58,7 +58,7 @@ class IvrController extends Controller
 
         return response()->json([
             'ivr' => $ivr,
-            'message' => 'IVR created successfully'
+            'message' => 'IVR created successfully',
         ], 201);
     }
 
@@ -97,7 +97,7 @@ class IvrController extends Controller
 
         return response()->json([
             'ivr' => $ivr,
-            'message' => 'IVR updated successfully'
+            'message' => 'IVR updated successfully',
         ]);
     }
 
@@ -113,7 +113,7 @@ class IvrController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted IVR {$ivr->name}");
 
         return response()->json([
-            'message' => 'IVR deleted successfully'
+            'message' => 'IVR deleted successfully',
         ]);
     }
 }

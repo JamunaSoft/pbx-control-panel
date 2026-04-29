@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Voicemail;
 use App\Models\AuditLog;
+use App\Models\Voicemail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -22,8 +22,8 @@ class VoicemailController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('mailbox', 'like', "%{$search}%")
-                  ->orWhere('fullname', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('fullname', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -67,7 +67,7 @@ class VoicemailController extends Controller
 
         return response()->json([
             'voicemail' => $voicemail,
-            'message' => 'Voicemail box created successfully'
+            'message' => 'Voicemail box created successfully',
         ], 201);
     }
 
@@ -106,7 +106,7 @@ class VoicemailController extends Controller
 
         return response()->json([
             'voicemail' => $voicemail,
-            'message' => 'Voicemail box updated successfully'
+            'message' => 'Voicemail box updated successfully',
         ]);
     }
 
@@ -120,7 +120,7 @@ class VoicemailController extends Controller
         // Check if voicemail is linked to an extension
         if ($voicemail->extension) {
             return response()->json([
-                'error' => 'Cannot delete voicemail box that is linked to an extension'
+                'error' => 'Cannot delete voicemail box that is linked to an extension',
             ], 422);
         }
 
@@ -129,7 +129,7 @@ class VoicemailController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted voicemail box {$voicemail->mailbox}");
 
         return response()->json([
-            'message' => 'Voicemail box deleted successfully'
+            'message' => 'Voicemail box deleted successfully',
         ]);
     }
 
@@ -143,7 +143,7 @@ class VoicemailController extends Controller
         return response()->json([
             'voicemail' => $voicemail,
             'messages' => [],
-            'message' => 'Voicemail messages require Asterisk integration'
+            'message' => 'Voicemail messages require Asterisk integration',
         ]);
     }
 
@@ -162,7 +162,7 @@ class VoicemailController extends Controller
 
         return response()->json([
             'message' => 'Voicemail deletion requires Asterisk integration',
-            'message_id' => $validated['message_id']
+            'message_id' => $validated['message_id'],
         ]);
     }
 }

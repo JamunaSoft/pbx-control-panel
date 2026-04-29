@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\CallRoute;
 use App\Models\AuditLog;
+use App\Models\CallRoute;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class CallRouteController extends Controller
 {
@@ -21,7 +20,7 @@ class CallRouteController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('pattern', 'like', "%{$search}%");
+                    ->orWhere('pattern', 'like', "%{$search}%");
             });
         }
 
@@ -63,7 +62,7 @@ class CallRouteController extends Controller
 
         return response()->json([
             'route' => $route,
-            'message' => 'Call route created successfully'
+            'message' => 'Call route created successfully',
         ], 201);
     }
 
@@ -99,7 +98,7 @@ class CallRouteController extends Controller
 
         return response()->json([
             'route' => $route,
-            'message' => 'Call route updated successfully'
+            'message' => 'Call route updated successfully',
         ]);
     }
 
@@ -115,7 +114,7 @@ class CallRouteController extends Controller
         AuditLog::log('delete', null, $request->user(), $oldValues, [], "Deleted call route {$route->name}");
 
         return response()->json([
-            'message' => 'Call route deleted successfully'
+            'message' => 'Call route deleted successfully',
         ]);
     }
 
@@ -158,6 +157,6 @@ class CallRouteController extends Controller
             $pattern
         );
 
-        return '/^' . $regex . '$/';
+        return '/^'.$regex.'$/';
     }
 }

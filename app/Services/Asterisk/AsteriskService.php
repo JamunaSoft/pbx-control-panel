@@ -2,17 +2,19 @@
 
 namespace App\Services\Asterisk;
 
-use Exception;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 use App\Events\ExtensionStatusUpdated;
 use App\Models\Extension;
+use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class AsteriskService
 {
     private $ami;
+
     private $ari;
+
     private $connected = false;
 
     public function __construct()
@@ -46,7 +48,7 @@ class AsteriskService
         Log::info('Asterisk connection status', [
             'ami' => $amiConnected,
             'ari' => $ariAvailable,
-            'overall' => $this->connected
+            'overall' => $this->connected,
         ]);
 
         return $this->connected;
@@ -65,7 +67,7 @@ class AsteriskService
      */
     public function getExtensionStatus($extension)
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             return Cache::get("extension_status_{$extension}", 'unknown');
         }
 
@@ -88,6 +90,7 @@ class AsteriskService
             return $status;
         } catch (Exception $e) {
             Log::error('Failed to get extension status', ['extension' => $extension, 'error' => $e->getMessage()]);
+
             return Cache::get("extension_status_{$extension}", 'unknown');
         }
     }
@@ -111,7 +114,7 @@ class AsteriskService
      */
     public function getActiveCalls()
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             return Cache::get('active_calls', []);
         }
 
@@ -136,9 +139,11 @@ class AsteriskService
             }
 
             Cache::put('active_calls', $normalizedCalls, 30); // Cache for 30 seconds
+
             return $normalizedCalls;
         } catch (Exception $e) {
             Log::error('Failed to get active calls', ['error' => $e->getMessage()]);
+
             return Cache::get('active_calls', []);
         }
     }
@@ -148,7 +153,7 @@ class AsteriskService
      */
     public function originateCall($from, $to, $callerId = null)
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             throw new Exception('Not connected to Asterisk');
         }
 
@@ -158,13 +163,14 @@ class AsteriskService
 
             $result = $this->ari->originateChannel($channel, $to, 'default', $callerId);
 
-            if (!$result) {
+            if (! $result) {
                 // Fallback to AMI
                 $result = $this->ami->originateCall($channel, 'default', $to, 1, $callerId);
             }
 
             if ($result) {
                 Log::info('Call originated successfully', ['from' => $from, 'to' => $to]);
+
                 return true;
             }
 
@@ -173,7 +179,7 @@ class AsteriskService
             Log::error('Call origination failed', [
                 'from' => $from,
                 'to' => $to,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -184,7 +190,7 @@ class AsteriskService
      */
     public function hangupCall($channelId)
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             throw new Exception('Not connected to Asterisk');
         }
 
@@ -192,13 +198,14 @@ class AsteriskService
             // Try ARI first, fallback to AMI
             $result = $this->ari->hangupChannel($channelId);
 
-            if (!$result) {
+            if (! $result) {
                 // Fallback to AMI
                 $result = $this->ami->hangupChannel($channelId);
             }
 
             if ($result) {
                 Log::info('Call hung up successfully', ['channel' => $channelId]);
+
                 return true;
             }
 
@@ -206,7 +213,7 @@ class AsteriskService
         } catch (Exception $e) {
             Log::error('Call hangup failed', [
                 'channel' => $channelId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -217,7 +224,7 @@ class AsteriskService
      */
     public function transferCall($channelId, $extension, $context = 'default')
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             throw new Exception('Not connected to Asterisk');
         }
 
@@ -227,8 +234,9 @@ class AsteriskService
             if ($result) {
                 Log::info('Call transferred successfully', [
                     'channel' => $channelId,
-                    'to' => $extension
+                    'to' => $extension,
                 ]);
+
                 return true;
             }
 
@@ -237,7 +245,7 @@ class AsteriskService
             Log::error('Call transfer failed', [
                 'channel' => $channelId,
                 'to' => $extension,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -248,7 +256,7 @@ class AsteriskService
      */
     public function getSystemInfo()
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             return [
                 'status' => 'disconnected',
                 'uptime' => 'Unknown',
@@ -268,11 +276,12 @@ class AsteriskService
                 'uptime' => $amiInfo['uptime'] ?? 'Unknown',
                 'version' => $ariInfo['build']['version'] ?? 'Unknown',
                 'active_channels' => count($channels),
-                'active_calls' => count(array_filter($channels, fn($c) => $c['status'] === 'up')),
+                'active_calls' => count(array_filter($channels, fn ($c) => $c['status'] === 'up')),
                 'last_updated' => now()->toISOString(),
             ];
         } catch (Exception $e) {
             Log::error('Failed to get system info', ['error' => $e->getMessage()]);
+
             return [
                 'status' => 'error',
                 'uptime' => 'Unknown',
@@ -316,12 +325,12 @@ class AsteriskService
      */
     public function reloadConfig($module = null)
     {
-        if (!$this->isConnected()) {
+        if (! $this->isConnected()) {
             throw new Exception('Not connected to Asterisk');
         }
 
         try {
-            $command = $module ? "module reload {$module}" : "reload";
+            $command = $module ? "module reload {$module}" : 'reload';
 
             // This would send AMI command to reload
             Log::info('Asterisk config reload requested', ['module' => $module]);

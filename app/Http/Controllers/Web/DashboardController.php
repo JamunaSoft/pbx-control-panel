@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Extension;
-use App\Models\Trunk;
 use App\Models\CallQueue;
 use App\Models\Cdr;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\Extension;
+use App\Models\Trunk;
 
 class DashboardController extends Controller
 {

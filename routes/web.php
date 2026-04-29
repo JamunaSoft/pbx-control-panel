@@ -1,7 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\AuditLogController;
+use App\Http\Controllers\Web\CallRouteController;
+use App\Http\Controllers\Web\CdrController;
+use App\Http\Controllers\Web\ConferenceRoomController;
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ExtensionController;
+use App\Http\Controllers\Web\IvrController;
+use App\Http\Controllers\Web\QueueController;
+use App\Http\Controllers\Web\SystemController;
+use App\Http\Controllers\Web\TrunkController;
+use App\Http\Controllers\Web\VoicemailController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -9,38 +20,38 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
-    Route::get('/dashboard', [App\Http\Controllers\Web\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Extensions
-    Route::resource('extensions', App\Http\Controllers\Web\ExtensionController::class);
+    Route::resource('extensions', ExtensionController::class);
 
     // Trunks
-    Route::resource('trunks', App\Http\Controllers\Web\TrunkController::class);
+    Route::resource('trunks', TrunkController::class);
 
     // Queues
-    Route::resource('queues', App\Http\Controllers\Web\QueueController::class);
-    Route::post('queues/{queue}/extensions', [App\Http\Controllers\Web\QueueController::class, 'addExtension'])->name('queues.add-extension');
-    Route::delete('queues/{queue}/extensions/{extension}', [App\Http\Controllers\Web\QueueController::class, 'removeExtension'])->name('queues.remove-extension');
+    Route::resource('queues', QueueController::class);
+    Route::post('queues/{queue}/extensions', [QueueController::class, 'addExtension'])->name('queues.add-extension');
+    Route::delete('queues/{queue}/extensions/{extension}', [QueueController::class, 'removeExtension'])->name('queues.remove-extension');
 
     // IVRs
-    Route::resource('ivrs', App\Http\Controllers\Web\IvrController::class);
+    Route::resource('ivrs', IvrController::class);
 
     // Call Routes
-    Route::resource('call-routes', App\Http\Controllers\Web\CallRouteController::class);
+    Route::resource('call-routes', CallRouteController::class);
 
     // CDR
-    Route::get('cdr', [App\Http\Controllers\Web\CdrController::class, 'index'])->name('cdr.index');
-    Route::get('cdr/export', [App\Http\Controllers\Web\CdrController::class, 'export'])->name('cdr.export');
+    Route::get('cdr', [CdrController::class, 'index'])->name('cdr.index');
+    Route::get('cdr/export', [CdrController::class, 'export'])->name('cdr.export');
 
     // Conference Rooms
-    Route::resource('conference-rooms', App\Http\Controllers\Web\ConferenceRoomController::class);
+    Route::resource('conference-rooms', ConferenceRoomController::class);
 
     // Voicemails
-    Route::resource('voicemails', App\Http\Controllers\Web\VoicemailController::class);
+    Route::resource('voicemails', VoicemailController::class);
 
     // System Administration
-    Route::get('system/status', [App\Http\Controllers\Web\SystemController::class, 'status'])->name('system.status');
-    Route::get('audit-logs', [App\Http\Controllers\Web\AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('system/status', [SystemController::class, 'status'])->name('system.status');
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 });
 
 require __DIR__.'/auth.php';

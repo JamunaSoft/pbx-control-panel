@@ -32,8 +32,9 @@ class TestBroadcast extends Command
 
         $extension = Extension::where('extension_number', $extensionNumber)->first();
 
-        if (!$extension) {
+        if (! $extension) {
             $this->error("Extension {$extensionNumber} not found");
+
             return;
         }
 
@@ -43,5 +44,4 @@ class TestBroadcast extends Command
 
         $this->info("Broadcasted extension status update: {$extensionNumber} -> {$status}");
     }
-}
 }
